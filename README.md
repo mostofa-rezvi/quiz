@@ -99,7 +99,7 @@ Make sure you have the following software installed on your machine:
 
 * Open your browser and navigate to `http://localhost:4200`.
 * **Admin Login:**
-    * Username: `admin`
+    * Email: `admin@example.com`
     * Password: `admin123`
 * **User Login:** Register a new user account or use a pre-existing one.
 
