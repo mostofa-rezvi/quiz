@@ -1,6 +1,7 @@
 package com.encapsulearn.quiz_api.entity;
 
 import com.encapsulearn.quiz_api.enums.QuestionType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,11 +25,13 @@ public class Question {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_id")
+    @JsonBackReference
     private Quiz quiz;
 
     // In Question.java
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<QuizOption> options = new ArrayList<>(); // To this
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<QuizOption> options;
+//    private List<QuizOption> options = new ArrayList<>();
 
     private String correctAnswer; // For SHORT_ANSWER questions
 }

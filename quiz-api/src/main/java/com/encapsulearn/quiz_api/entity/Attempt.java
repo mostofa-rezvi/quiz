@@ -21,11 +21,15 @@ public class Attempt {
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
 
+    @ManyToOne(fetch = FetchType.LAZY) // New: Link attempt to a user
+    @JoinColumn(name = "user_id")
+    private User user;
+
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private Integer score; // Max score for this attempt (e.g., number of correct answers)
 
-    @OneToMany(mappedBy = "attempt", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "attempt", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<AttemptAnswer> answers;
 }
 

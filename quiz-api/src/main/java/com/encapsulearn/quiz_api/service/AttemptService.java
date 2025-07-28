@@ -2,14 +2,17 @@ package com.encapsulearn.quiz_api.service;
 
 import com.encapsulearn.quiz_api.dto.AttemptAnswerDetailDto;
 import com.encapsulearn.quiz_api.dto.AttemptResultDto;
+import com.encapsulearn.quiz_api.dto.AttemptStartResponseDto;
 import com.encapsulearn.quiz_api.dto.AttemptSubmissionRequest;
 import com.encapsulearn.quiz_api.entity.*;
 import com.encapsulearn.quiz_api.enums.QuestionType;
+import com.encapsulearn.quiz_api.enums.Role; // New import
 import com.encapsulearn.quiz_api.repository.AttemptAnswerRepository;
 import com.encapsulearn.quiz_api.repository.AttemptRepository;
-import com.encapsulearn.quiz_api.repository.QuestionRepository;
+import com.encapsulearn.quiz_api.repository.QuestionRepository; // Not used directly but kept for completeness
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder; // New import
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,27 +28,44 @@ public class AttemptService {
     @Autowired
     private AttemptRepository attemptRepository;
     @Autowired
-    private QuizService quizService; // To get Quiz details
+    private QuizService quizService;
     @Autowired
     private QuestionRepository questionRepository;
     @Autowired
     private AttemptAnswerRepository attemptAnswerRepository;
 
+    // Helper method to get the current authenticated user
+    private User getCurrentAuthenticatedUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User) {
+            return (User) principal;
+        }
+        throw new RuntimeException("User not authenticated or principal not found.");
+    }
 
     @Transactional
-    public Attempt startAttempt(Long quizId) {
+    public AttemptStartResponseDto startAttempt(Long quizId) {
+        User currentUser = getCurrentAuthenticatedUser(); // Get current user
         Quiz quiz = quizService.getQuizById(quizId);
         Attempt attempt = new Attempt();
         attempt.setQuiz(quiz);
+        attempt.setUser(currentUser); // Associate the attempt with the current user
         attempt.setStartTime(LocalDateTime.now());
-        attempt.setScore(0); // Initialize score
-        return attemptRepository.save(attempt);
+        attempt.setScore(0);
+        Attempt savedAttempt = attemptRepository.save(attempt);
+        return new AttemptStartResponseDto(savedAttempt.getId());
     }
 
     @Transactional
     public AttemptResultDto submitAttempt(Long attemptId, AttemptSubmissionRequest submissionRequest) {
+        User currentUser = getCurrentAuthenticatedUser(); // Get current user
         Attempt attempt = attemptRepository.findById(attemptId)
                 .orElseThrow(() -> new RuntimeException("Attempt not found with id: " + attemptId));
+
+        // Security check: Ensure the attempt belongs to the current user
+        if (!attempt.getUser().getId().equals(currentUser.getId())) {
+            throw new RuntimeException("Access denied: You are not authorized to submit this attempt.");
+        }
 
         if (attempt.getEndTime() != null) {
             throw new RuntimeException("Attempt already submitted.");
@@ -59,7 +79,7 @@ public class AttemptService {
                 .collect(Collectors.toMap(Question::getId, Function.identity()));
 
         final int[] score = {0};
-        List<AttemptAnswer> attemptAnswers = submissionRequest.getAnswers().stream().map(answerDto -> {
+        List<AttemptAnswer> newAttemptAnswers = submissionRequest.getAnswers().stream().map(answerDto -> {
             Question question = questionMap.get(answerDto.getQuestionId());
             if (question == null) {
                 throw new RuntimeException("Question with id " + answerDto.getQuestionId() + " not found in quiz.");
@@ -72,8 +92,6 @@ public class AttemptService {
 
             boolean isCorrect = false;
             if (question.getType() == QuestionType.MCQ) {
-                // Check if the user's answer matches the text of the correct option
-                // Assuming userAnswer for MCQ is the text of the chosen option
                 isCorrect = question.getOptions().stream()
                         .anyMatch(option -> option.isCorrect() && option.getText().equalsIgnoreCase(answerDto.getUserAnswer()));
             } else if (question.getType() == QuestionType.SHORT_ANSWER) {
@@ -87,24 +105,47 @@ public class AttemptService {
         }).collect(Collectors.toList());
 
         attempt.setScore(score[0]);
-        attempt.setAnswers(attemptAnswers); // This will persist answers due to cascade
+
+        if (attempt.getAnswers() == null) {
+            attempt.setAnswers(new java.util.ArrayList<>());
+        }
+        attempt.getAnswers().clear();
+        attempt.getAnswers().addAll(newAttemptAnswers);
+
+        // Ensure bidirectional relationship is properly set for new answers
+        for (AttemptAnswer ans : newAttemptAnswers) {
+            ans.setAttempt(attempt);
+        }
 
         Attempt savedAttempt = attemptRepository.save(attempt);
         return mapAttemptToResultDto(savedAttempt);
     }
 
-    // --- Get All Attempt History ---
+    // Get All Attempt History (Filtered by user if not ADMIN)
     public List<AttemptResultDto> getAllAttemptHistory() {
-        return attemptRepository.findAll().stream()
+        User currentUser = getCurrentAuthenticatedUser();
+        List<Attempt> attempts;
+        if (currentUser.getRole() == Role.ROLE_ADMIN) {
+            attempts = attemptRepository.findAll(); // Admin sees all attempts
+        } else {
+            attempts = attemptRepository.findByUser(currentUser); // Regular user sees only their own attempts
+        }
+        return attempts.stream()
                 .map(this::mapAttemptToResultDto)
-                .sorted(Comparator.comparing(AttemptResultDto::getStartTime).reversed()) // Newest first
+                .sorted(Comparator.comparing(AttemptResultDto::getStartTime).reversed())
                 .collect(Collectors.toList());
     }
 
-    // --- Get Detailed Attempt History by ID ---
+    // Get Detailed Attempt History by ID (Ownership check)
     public AttemptResultDto getAttemptDetails(Long attemptId) {
+        User currentUser = getCurrentAuthenticatedUser();
         Attempt attempt = attemptRepository.findById(attemptId)
                 .orElseThrow(() -> new RuntimeException("Attempt not found with id: " + attemptId));
+
+        // Security check: Admin can see any, regular user must own the attempt
+        if (currentUser.getRole() != Role.ROLE_ADMIN && !attempt.getUser().getId().equals(currentUser.getId())) {
+            throw new RuntimeException("Access denied: You are not authorized to view details for this attempt.");
+        }
         return mapAttemptToResultDto(attempt);
     }
 
@@ -132,7 +173,6 @@ public class AttemptService {
                         detailDto.setOptions(question.getOptions().stream()
                                 .map(o -> new com.encapsulearn.quiz_api.dto.OptionDto(o.getText(), o.isCorrect()))
                                 .collect(Collectors.toList()));
-                        // For MCQ, correct answer is implicitly in options with correct=true
                         question.getOptions().stream().filter(QuizOption::isCorrect)
                                 .findFirst()
                                 .ifPresent(option -> detailDto.setCorrectAnswer(option.getText()));
