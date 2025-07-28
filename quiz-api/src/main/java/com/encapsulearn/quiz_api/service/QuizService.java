@@ -20,26 +20,25 @@ public class QuizService {
     @Autowired
     private QuizRepository quizRepository;
 
-    // --- Quiz Creation (Manual) ---
     @Transactional
     public QuizResponseDto createQuizManually(QuizCreateRequest request) {
         Quiz quiz = new Quiz();
         quiz.setTitle(request.getTitle());
         quiz.setDurationMinutes(request.getDurationMinutes());
-        quiz.setType(request.getType()); // Set the overall quiz type
+        quiz.setType(request.getType());
 
         List<Question> questions = request.getQuestions().stream().map(qDto -> {
             Question question = new Question();
             question.setText(qDto.getText());
             question.setType(qDto.getType());
-            question.setQuiz(quiz); // Set bidirectional relationship
+            question.setQuiz(quiz);
 
             if (qDto.getType() == QuestionType.MCQ) {
                 List<QuizOption> options = qDto.getOptions().stream().map(oDto -> {
                     QuizOption option = new QuizOption();
                     option.setText(oDto.getText());
                     option.setCorrect(oDto.isCorrect());
-                    option.setQuestion(question); // Set bidirectional relationship
+                    option.setQuestion(question);
                     return option;
                 }).collect(Collectors.toList());
                 question.setOptions(options);
@@ -61,7 +60,6 @@ public class QuizService {
         );
     }
 
-    // --- Quiz Creation (Excel Upload) ---
     @Transactional
     public List<QuizResponseDto> createQuizzesFromExcel(MultipartFile file) throws IOException {
         List<Quiz> quizzes = ExcelHelper.parseExcelToQuizzes(file.getInputStream());
@@ -77,7 +75,6 @@ public class QuizService {
                 .collect(Collectors.toList());
     }
 
-    // --- Get All Quizzes ---
     public List<QuizResponseDto> getAllQuizzes() {
         return quizRepository.findAll().stream()
                 .map(quiz -> new QuizResponseDto(
@@ -90,13 +87,11 @@ public class QuizService {
                 .collect(Collectors.toList());
     }
 
-    // --- Get Quiz by ID (for attempt/update) ---
     public Quiz getQuizById(Long id) {
         return quizRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Quiz not found with id: " + id));
     }
 
-    // --- Update Quiz ---
     @Transactional
     public QuizResponseDto updateQuiz(Long id, QuizCreateRequest request) {
         Quiz existingQuiz = getQuizById(id);
@@ -104,7 +99,6 @@ public class QuizService {
         existingQuiz.setDurationMinutes(request.getDurationMinutes());
         existingQuiz.setType(request.getType());
 
-        // Clear existing questions and add new ones to handle changes
         existingQuiz.getQuestions().clear();
         request.getQuestions().forEach(qDto -> {
             Question question = new Question();
@@ -137,7 +131,6 @@ public class QuizService {
         );
     }
 
-    // --- Delete Quiz ---
     @Transactional
     public void deleteQuiz(Long id) {
         if (!quizRepository.existsById(id)) {

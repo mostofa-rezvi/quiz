@@ -17,13 +17,11 @@ public class Quiz {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
-    private int durationMinutes; // Duration of the quiz in minutes
+    private int durationMinutes;
 
     @Enumerated(EnumType.STRING)
-    private QuizType type; // MCQ, SHORT_ANSWER
+    private QuizType type;
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions;
-
-
 }

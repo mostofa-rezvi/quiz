@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,18 +20,16 @@ public class Question {
     private String text;
 
     @Enumerated(EnumType.STRING)
-    private QuestionType type; // MCQ, SHORT_ANSWER
+    private QuestionType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_id")
     @JsonBackReference
     private Quiz quiz;
 
-    // In Question.java
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<QuizOption> options;
-//    private List<QuizOption> options = new ArrayList<>();
 
-    private String correctAnswer; // For SHORT_ANSWER questions
+    private String correctAnswer;
 }
 

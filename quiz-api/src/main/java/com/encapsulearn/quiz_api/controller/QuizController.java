@@ -10,7 +10,7 @@ import com.encapsulearn.quiz_api.service.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize; // New import
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,23 +20,20 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/quizzes")
-//@CrossOrigin(origins = "http://localhost:4200") // REMOVE THIS: Handled by WebConfig and SecurityConfig
 public class QuizController {
 
     @Autowired
     private QuizService quizService;
 
-    // Create Quiz Manually (ADMIN only)
     @PostMapping("/manual")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')") // Admin-specific
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<QuizResponseDto> createQuizManually(@RequestBody QuizCreateRequest request) {
         QuizResponseDto createdQuiz = quizService.createQuizManually(request);
         return new ResponseEntity<>(createdQuiz, HttpStatus.CREATED);
     }
 
-    // Upload Excel File for Quiz Creation (ADMIN only)
     @PostMapping("/upload")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')") // Admin-specific
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<QuizResponseDto>> uploadQuizExcel(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -47,18 +44,16 @@ public class QuizController {
         } catch (IOException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // For Excel format errors
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    // Get All Quizzes (Publicly accessible for listing)
     @GetMapping
     public ResponseEntity<List<QuizResponseDto>> getAllQuizzes() {
         List<QuizResponseDto> quizzes = quizService.getAllQuizzes();
         return new ResponseEntity<>(quizzes, HttpStatus.OK);
     }
 
-    // Get Quiz by ID (Public for attempting/updating if admin)
     @GetMapping("/{id}")
     public ResponseEntity<QuizCreateRequest> getQuizById(@PathVariable Long id) {
         try {
@@ -89,9 +84,8 @@ public class QuizController {
         }
     }
 
-    // Update Quiz (ADMIN only)
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')") // Admin-specific
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<QuizResponseDto> updateQuiz(@PathVariable Long id, @RequestBody QuizCreateRequest request) {
         try {
             QuizResponseDto updatedQuiz = quizService.updateQuiz(id, request);
@@ -101,9 +95,8 @@ public class QuizController {
         }
     }
 
-    // Delete Quiz (ADMIN only)
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')") // Admin-specific
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteQuiz(@PathVariable Long id) {
         try {
             quizService.deleteQuiz(id);

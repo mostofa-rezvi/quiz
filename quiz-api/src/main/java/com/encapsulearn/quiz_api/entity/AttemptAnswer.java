@@ -23,5 +23,5 @@ public class AttemptAnswer {
     private Question question;
 
     private String userAnswer;
-    private Boolean isCorrect; // Whether the user's answer was correct for this question
+    private Boolean isCorrect;
 }

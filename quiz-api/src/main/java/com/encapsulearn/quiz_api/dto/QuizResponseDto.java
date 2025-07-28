@@ -13,5 +13,5 @@ public class QuizResponseDto {
     private String title;
     private int durationMinutes;
     private QuizType type;
-    private int numberOfQuestions; // Useful for display
+    private int numberOfQuestions;
 }

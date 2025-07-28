@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "`user`") // "user" is a reserved keyword in some DBs, quoting it helps
+@Table(name = "`user`")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,9 +28,8 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
     @Enumerated(EnumType.STRING)
-    private Role role; // Single role for simplicity
+    private Role role;
 
-    // UserDetails interface methods
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));

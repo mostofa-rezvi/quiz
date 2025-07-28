@@ -11,9 +11,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class QuestionDto {
-    private Long id; // Used for update/retrieval
+    private Long id;
     private String text;
     private QuestionType type;
-    private List<OptionDto> options; // For MCQ
-    private String correctAnswer; // For SHORT_ANSWER
+    private List<OptionDto> options;
+    private String correctAnswer;
 }

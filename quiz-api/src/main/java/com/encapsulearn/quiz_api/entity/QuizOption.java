@@ -15,7 +15,7 @@ public class QuizOption {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String text;
-    private boolean correct; // true if this is the correct option for MCQ
+    private boolean correct;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")

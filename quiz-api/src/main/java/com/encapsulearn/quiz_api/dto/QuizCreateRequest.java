@@ -13,6 +13,6 @@ import java.util.List;
 public class QuizCreateRequest {
     private String title;
     private int durationMinutes;
-    private QuizType type; // Should be consistent across questions
+    private QuizType type;
     private List<QuestionDto> questions;
 }

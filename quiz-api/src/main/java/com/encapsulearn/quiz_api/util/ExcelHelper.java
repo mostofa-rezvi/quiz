@@ -21,9 +21,8 @@ public class ExcelHelper {
     public static List<Quiz> parseExcelToQuizzes(InputStream is) throws IOException {
         Workbook workbook = new XSSFWorkbook(is);
         List<Quiz> quizzes = new ArrayList<>();
-        Map<String, Quiz> quizMap = new HashMap<>(); // To link questions to quizzes
+        Map<String, Quiz> quizMap = new HashMap<>();
 
-        // 1. Process Quizzes sheet
         Sheet quizSheet = workbook.getSheet("Quizzes");
         if (quizSheet == null) {
             throw new IOException("Excel file must contain a sheet named 'Quizzes'.");
@@ -32,17 +31,17 @@ public class ExcelHelper {
         int rowNum = 0;
         while (quizRows.hasNext()) {
             Row currentRow = quizRows.next();
-            if (rowNum == 0) { // skip header
+            if (rowNum == 0) {
                 rowNum++;
                 continue;
             }
 
             Quiz quiz = new Quiz();
-            quiz.setQuestions(new ArrayList<>()); // Initialize questions list
+            quiz.setQuestions(new ArrayList<>());
 
-            Cell titleCell = currentRow.getCell(0); // QuizTitle
-            Cell durationCell = currentRow.getCell(1); // DurationMinutes
-            Cell typeCell = currentRow.getCell(2); // QuizType
+            Cell titleCell = currentRow.getCell(0);
+            Cell durationCell = currentRow.getCell(1);
+            Cell typeCell = currentRow.getCell(2);
 
             if (titleCell == null || titleCell.getCellType() != CellType.STRING || titleCell.getStringCellValue().isEmpty()) {
                 throw new IOException("Quiz title cannot be empty at row " + (rowNum + 1));
@@ -68,7 +67,6 @@ public class ExcelHelper {
             rowNum++;
         }
 
-        // 2. Process Questions sheet
         Sheet questionSheet = workbook.getSheet("Questions");
         if (questionSheet == null) {
             throw new IOException("Excel file must contain a sheet named 'Questions'.");
@@ -77,20 +75,20 @@ public class ExcelHelper {
         rowNum = 0;
         while (questionRows.hasNext()) {
             Row currentRow = questionRows.next();
-            if (rowNum == 0) { // skip header
+            if (rowNum == 0) {
                 rowNum++;
                 continue;
             }
 
-            Cell quizTitleCell = currentRow.getCell(0); // QuizTitle (to link to Quiz)
-            Cell questionTextCell = currentRow.getCell(1); // QuestionText
-            Cell questionTypeCell = currentRow.getCell(2); // QuestionType
-            Cell optionACell = currentRow.getCell(3); // OptionA
-            Cell optionBCell = currentRow.getCell(4); // OptionB
-            Cell optionCCell = currentRow.getCell(5); // OptionC
-            Cell optionDCell = currentRow.getCell(6); // OptionD
-            Cell correctOptionCell = currentRow.getCell(7); // CorrectOption (for MCQ, e.g., 'A', 'B')
-            Cell correctAnswerShortCell = currentRow.getCell(8); // CorrectAnswerShort (for Short Answer)
+            Cell quizTitleCell = currentRow.getCell(0);
+            Cell questionTextCell = currentRow.getCell(1);
+            Cell questionTypeCell = currentRow.getCell(2);
+            Cell optionACell = currentRow.getCell(3);
+            Cell optionBCell = currentRow.getCell(4);
+            Cell optionCCell = currentRow.getCell(5);
+            Cell optionDCell = currentRow.getCell(6);
+            Cell correctOptionCell = currentRow.getCell(7);
+            Cell correctAnswerShortCell = currentRow.getCell(8);
 
             String quizTitle = (quizTitleCell != null) ? quizTitleCell.getStringCellValue() : "";
             Quiz parentQuiz = quizMap.get(quizTitle);
@@ -139,7 +137,7 @@ public class ExcelHelper {
                 question.setCorrectAnswer(correctAnswerShortCell.getStringCellValue());
             }
 
-            parentQuiz.getQuestions().add(question); // Add question to the parent quiz
+            parentQuiz.getQuestions().add(question);
             rowNum++;
         }
 

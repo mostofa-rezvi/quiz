@@ -29,7 +29,7 @@ public class AuthService {
         var user = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.ROLE_USER) // Default role for new registrations
+                .role(Role.ROLE_USER)
                 .build();
         userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
@@ -48,7 +48,7 @@ public class AuthService {
                 )
         );
         var user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found after authentication.")); // Should not happen
+                .orElseThrow(() -> new RuntimeException("User not found after authentication."));
         var jwtToken = jwtService.generateToken(user);
         return AuthResponse.builder()
                 .token(jwtToken)

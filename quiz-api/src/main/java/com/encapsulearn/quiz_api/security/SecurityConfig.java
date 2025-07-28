@@ -30,8 +30,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        // Allow OPTIONS requests for CORS preflight
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // <-- ADD THIS LINE
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         .requestMatchers("/api/auth/**").permitAll()
 
