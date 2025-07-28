@@ -1,0 +1,196 @@
+<div class="container my-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h3 class="mb-0">{{ isEditMode ? 'Update Quiz' : 'Create New Quiz' }}</h3>
+    </div>
+    <div class="card-body">
+
+      <!-- Tabs for Manual/Excel -->
+      <ul class="nav nav-tabs mb-3" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="manual-tab" data-bs-toggle="tab" data-bs-target="#manual" type="button"
+            role="tab" aria-controls="manual" aria-selected="true">
+            <i class="fa fa-keyboard-o me-2"></i>Manual Entry
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="excel-tab" data-bs-toggle="tab" data-bs-target="#excel" type="button" role="tab"
+            aria-controls="excel" aria-selected="false" [disabled]="isEditMode">
+            <i class="fa fa-file-excel-o me-2"></i>Upload Excel <small class="text-muted">(Create Only)</small>
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="myTabContent">
+
+        <!-- Manual Entry Tab -->
+        <div class="tab-pane fade show active" id="manual" role="tabpanel" aria-labelledby="manual-tab">
+          <form [formGroup]="quizForm" (ngSubmit)="onSubmitManual()">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="title" class="form-label">Quiz Title</label>
+                <input type="text" id="title" formControlName="title" class="form-control"
+                  [class.is-invalid]="quizForm.get('title')?.invalid && (quizForm.get('title')?.dirty || quizForm.get('title')?.touched)">
+                <div
+                  *ngIf="quizForm.get('title')?.invalid && (quizForm.get('title')?.dirty || quizForm.get('title')?.touched)"
+                  class="invalid-feedback">
+                  Quiz Title is required.
+                </div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label for="durationMinutes" class="form-label">Duration (Minutes)</label>
+                <input type="number" id="durationMinutes" formControlName="durationMinutes" class="form-control"
+                  [class.is-invalid]="quizForm.get('durationMinutes')?.invalid && (quizForm.get('durationMinutes')?.dirty || quizForm.get('durationMinutes')?.touched)">
+                <div
+                  *ngIf="quizForm.get('durationMinutes')?.invalid && (quizForm.get('durationMinutes')?.dirty || quizForm.get('durationMinutes')?.touched)"
+                  class="invalid-feedback">
+                  Duration must be a positive number.
+                </div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label for="quizType" class="form-label">Overall Quiz Type</label>
+                <select id="quizType" formControlName="type" class="form-select"
+                  [class.is-invalid]="quizForm.get('type')?.invalid && (quizForm.get('type')?.dirty || quizForm.get('type')?.touched)">
+                  <option *ngFor="let type of quizTypes" [value]="type">{{ type }}</option>
+                </select>
+                <div
+                  *ngIf="quizForm.get('type')?.invalid && (quizForm.get('type')?.dirty || quizForm.get('type')?.touched)"
+                  class="invalid-feedback">
+                  Quiz Type is required.
+                </div>
+              </div>
+            </div>
+
+            <hr class="my-4">
+
+            <h4>Questions</h4>
+            <div formArrayName="questions">
+              <div *ngIf="questions.length === 0" class="alert alert-info text-center">
+                No questions added yet. Click 'Add Question' to start.
+              </div>
+              <div *ngFor="let question of questions.controls; let i = index" [formGroupName]="i"
+                class="card mb-3 p-3 shadow-sm border-0 bg-light">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h5>Question {{ i + 1 }}</h5>
+                  <button type="button" class="btn btn-danger btn-sm" (click)="removeQuestion(i)">
+                    <i class="fa fa-trash"></i> Remove Question
+                  </button>
+                </div>
+                <div class="row g-3">
+                  <div class="col-md-8">
+                    <label for="questionText{{i}}" class="form-label">Question Text</label>
+                    <input type="text" id="questionText{{i}}" formControlName="text" class="form-control"
+                      [class.is-invalid]="question.get('text')?.invalid && (question.get('text')?.dirty || question.get('text')?.touched)">
+                    <div
+                      *ngIf="question.get('text')?.invalid && (question.get('text')?.dirty || question.get('text')?.touched)"
+                      class="invalid-feedback">
+                      Question text is required.
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <label for="questionType{{i}}" class="form-label">Question Type</label>
+                    <select id="questionType{{i}}" formControlName="type" class="form-select"
+                      (change)="onQuestionTypeChange(question)"
+                      [class.is-invalid]="question.get('type')?.invalid && (question.get('type')?.dirty || question.get('type')?.touched)">
+                      <option *ngFor="let type of questionTypes" [value]="type">{{ type }}</option>
+                    </select>
+                    <div
+                      *ngIf="question.get('type')?.invalid && (question.get('type')?.dirty || question.get('type')?.touched)"
+                      class="invalid-feedback">
+                      Question Type is required.
+                    </div>
+                  </div>
+                </div>
+
+                <div *ngIf="question.get('type')?.value === QuestionType.MCQ" class="mt-3">
+                  <h6>Options (MCQ)</h6>
+                  <div formArrayName="options">
+                    <div *ngFor="let option of getOptions(question).controls; let j = index" [formGroupName]="j"
+                      class="input-group mb-2">
+                      <div class="input-group-text">
+                        <input type="radio" [name]="'correctOption_' + i" [id]="'correctOption_' + i + '_' + j"
+                          [value]="true" [checked]="option.get('correct')?.value" (change)="setCorrectOption(i, j)">
+                        <label class="ms-2 mb-0">Correct</label>
+                      </div>
+                      <input type="text" formControlName="text" class="form-control" placeholder="Option text"
+                        [class.is-invalid]="option.get('text')?.invalid && (option.get('text')?.dirty || option.get('text')?.touched)">
+                      <button type="button" class="btn btn-outline-danger" (click)="removeOption(i, j)">
+                        <i class="fa fa-minus"></i>
+                      </button>
+                      <div
+                        *ngIf="option.get('text')?.invalid && (option.get('text')?.dirty || option.get('text')?.touched)"
+                        class="invalid-feedback">
+                        Option text is required.
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    *ngIf="getOptions(question).invalid && (getOptions(question).dirty || getOptions(question).touched || false)"
+                    class="alert alert-danger mt-2">
+                    <div *ngIf="getOptions(question).errors?.['noOptions']">At least two options are required for MCQ
+                      questions.
+                    </div>
+                    <div *ngIf="getOptions(question).errors?.['minTwoOptions']">At least two options are required for
+                      MCQ questions.
+                    </div>
+                    <div *ngIf="getOptions(question).errors?.['oneCorrectOption']">Exactly one correct option must be
+                      selected.
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-outline-secondary btn-sm" (click)="addOption(i)">
+                    <i class="fa fa-plus"></i> Add Option
+                  </button>
+                </div>
+
+                <div *ngIf="question.get('type')?.value === QuestionType.SHORT_ANSWER" class="mt-3">
+                  <label for="correctAnswer{{i}}" class="form-label">Correct Answer (Short Answer)</label>
+                  <input type="text" id="correctAnswer{{i}}" formControlName="correctAnswer" class="form-control"
+                    [class.is-invalid]="question.get('correctAnswer')?.invalid && (question.get('correctAnswer')?.dirty || question.get('correctAnswer')?.touched)">
+                  <div
+                    *ngIf="question.get('correctAnswer')?.invalid && (question.get('correctAnswer')?.dirty || question.get('correctAnswer')?.touched)"
+                    class="invalid-feedback">
+                    Correct answer is required for short answer questions.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-secondary mt-3 me-2" (click)="addQuestion()">
+              <i class="fa fa-plus-circle"></i> Add Question
+            </button>
+            <button type="submit" class="btn btn-success mt-3" [disabled]="quizForm.invalid">
+              <i class="fa fa-save"></i> {{ isEditMode ? 'Update Quiz' : 'Create Quiz' }}
+            </button>
+          </form>
+        </div>
+
+        <!-- Excel Upload Tab -->
+        <div class="tab-pane fade" id="excel" role="tabpanel" aria-labelledby="excel-tab">
+          <div class="mb-3">
+            <h5>Upload Quizzes from Excel File</h5>
+            <p class="text-muted">
+              Please ensure your Excel file has two sheets: "Quizzes" and "Questions".
+            </p>
+            <p class="text-muted">
+              <strong>"Quizzes" Sheet Columns:</strong> <code>QuizTitle</code>, <code>DurationMinutes</code>,
+              <code>QuizType</code>
+              (MCQ/SHORT_ANSWER)
+            </p>
+            <p class="text-muted">
+              <strong>"Questions" Sheet Columns:</strong> <code>QuizTitle</code>, <code>QuestionText</code>,
+              <code>QuestionType</code>
+              (MCQ/SHORT_ANSWER), <code>OptionA</code>, <code>OptionB</code>, <code>OptionC</code>,
+              <code>OptionD</code>,
+              <code>CorrectOption</code> (A/B/C/D for MCQ), <code>CorrectAnswerShort</code> (for Short Answer)
+            </p>
+            <input type="file" class="form-control" (change)="onFileSelected($event)" accept=".xlsx, .xls">
+            <small class="form-text text-muted">{{ fileUploadMessage }}</small>
+          </div>
+          <button type="button" class="btn btn-success" (click)="onUploadExcel()" [disabled]="!selectedFile">
+            <i class="fa fa-upload"></i> Upload Excel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
