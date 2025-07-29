@@ -1,4 +1,4 @@
-# quiz
+# ENCAPSULEARN
 A full-stack online quiz system using Angular, Spring Boot, and MySQL.
 
 ---
@@ -99,7 +99,7 @@ Make sure you have the following software installed on your machine:
 
 * Open your browser and navigate to `http://localhost:4200`.
 * **Admin Login:**
-    * Email: `admin@example.com`
+    * Username: `admin`
     * Password: `admin123`
 * **User Login:** Register a new user account or use a pre-existing one.
 
