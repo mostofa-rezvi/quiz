@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { QuizService } from '../../services/quiz.service';
+import { AttemptService } from '../../services/attempt.service';
 import { Router } from '@angular/router';
 import { QuizResponse } from '../../models/quizResponse.model';
+import { AttemptStartResponse } from '../../models/AttemptStartResponse.model';
 
 declare var bootstrap: any;
 
@@ -17,7 +19,11 @@ export class QuizListComponent implements OnInit {
   quizSubmittedTotal: number | null = null;
   quizSubmittedTitle: string | null = null;
 
-  constructor(private quizService: QuizService, private router: Router) {}
+  constructor(
+    private quizService: QuizService,
+    private attemptService: AttemptService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadQuizzes();
@@ -41,6 +47,20 @@ export class QuizListComponent implements OnInit {
         console.error('Error fetching quizzes:', error);
         this.isLoading = false;
         alert('Failed to load quizzes.');
+      }
+    );
+  }
+
+  startQuiz(quizId: number): void {
+    this.attemptService.startAttempt(quizId).subscribe(
+      (attemptResponse: AttemptStartResponse) => {
+        this.router.navigate(['/quizzes/attempt', quizId], {
+          state: { attemptId: attemptResponse.id },
+        });
+      },
+      (error) => {
+        console.error('Error starting quiz attempt:', error);
+        alert('Failed to start quiz. Please try again.');
       }
     );
   }

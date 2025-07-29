@@ -1,0 +1,126 @@
+<div class="container my-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h3 class="mb-0">Quiz Result History</h3>
+    </div>
+    <div class="card-body">
+      <div *ngIf="isLoading" class="text-center py-5">
+        <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+        <p class="mt-2">Loading History...</p>
+      </div>
+
+      <div *ngIf="error" class="alert alert-danger text-center">
+        {{ error }}
+      </div>
+
+      <div *ngIf="!isLoading && attemptHistory.length === 0" class="alert alert-info text-center">
+        No quiz attempts recorded yet.
+      </div>
+
+      <div *ngIf="!isLoading && attemptHistory.length > 0" class="table-responsive">
+        <table class="table table-hover table-striped">
+          <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Quiz Title</th>
+            <th>Attempt Date</th>
+            <th>Score</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let attempt of attemptHistory; let i = index">
+            <!--            <td>{{ i + 1 }}</td>-->
+            <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
+            <td>{{ attempt.quizTitle }}</td>
+            <td>{{ attempt.startTime | date:'medium' }}</td>
+            <td>{{ attempt.score }}/{{ attempt.totalQuestions }}</td>
+            <td>
+              <button class="btn btn-info btn-sm" (click)="viewAttemptDetails(attempt.id)">
+                <i class="fa fa-eye me-1"></i> View Details
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Controls -->
+      <nav *ngIf="totalPages > 1 && !isLoading" aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <a class="page-link" (click)="prevPage()" aria-label="Previous">
+              <span aria-hidden="true">«</span>
+            </a>
+          </li>
+          <li class="page-item" *ngFor="let page of pages" [class.active]="page === currentPage">
+            <a class="page-link" (click)="goToPage(page)">{{ page }}</a>
+          </li>
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <a class="page-link" (click)="nextPage()" aria-label="Next">
+              <span aria-hidden="true">»</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <hr class="my-4" *ngIf="selectedAttemptDetails">
+
+      <!-- Detailed Result Section -->
+      <div *ngIf="selectedAttemptDetails" class="card mt-4 shadow-sm">
+        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+          <h4 class="mb-0">Details for {{ selectedAttemptDetails.quizTitle }}</h4>
+          <button class="btn btn-danger btn-sm" (click)="clearDetails()">
+            <i class="fa fa-times-circle me-1"></i> Close Details
+          </button>
+        </div>
+        <div class="card-body">
+          <p class="lead"><strong>Your Score:</strong> {{ selectedAttemptDetails.score }}
+            /{{ selectedAttemptDetails.totalQuestions }}</p>
+
+          <div *ngIf="isLoadingDetails" class="text-center py-3">
+            <i class="fa fa-spinner fa-spin fa-2x fa-fw"></i>
+            <p class="mt-2">Loading details...</p>
+          </div>
+
+          <div *ngIf="!isLoadingDetails && selectedAttemptDetails.detailedAnswers.length > 0">
+            <div *ngFor="let qa of selectedAttemptDetails.detailedAnswers; let i = index"
+                 class="mb-4 p-3 border rounded"
+                 [ngClass]="{'border-success bg-light-green': qa.isCorrect, 'border-danger bg-light-red': !qa.isCorrect}">
+              <h6>Q{{ i + 1 }}. {{ qa.questionText }}</h6>
+              <p><strong>Your Answer:</strong>
+                <span [ngClass]="{'text-success': qa.isCorrect, 'text-danger': !qa.isCorrect}">
+                  {{ qa.userAnswer || '[No Answer]' }}
+                </span>
+                <i class="fa ms-2"
+                   [ngClass]="{'fa-check text-success': qa.isCorrect, 'fa-times text-danger': !qa.isCorrect}"></i>
+              </p>
+
+              <div *ngIf="qa.questionType === QuestionType.MCQ">
+                <p><strong>Options:</strong></p>
+                <ul class="list-group list-group-flush">
+                  <li *ngFor="let option of qa.options" class="list-group-item list-group-item-sm"
+                      [ngClass]="{'list-group-item-success fw-bold': option.correct, 'list-group-item-info': qa.userAnswer === option.text && !option.correct}">
+                    {{ option.text }}
+                    <span *ngIf="option.correct" class="badge bg-success ms-2">Correct Answer</span>
+                    <span *ngIf="qa.userAnswer === option.text && !option.correct" class="badge bg-danger ms-2">Your Wrong Answer</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div *ngIf="qa.questionType === QuestionType.SHORT_ANSWER && !qa.isCorrect">
+                <p><strong>Correct Answer:</strong> <span class="text-success fw-bold">{{ qa.correctAnswer }}</span></p>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="!isLoadingDetails && selectedAttemptDetails.detailedAnswers.length === 0"
+               class="alert alert-warning text-center">
+            No detailed answers found for this attempt.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  

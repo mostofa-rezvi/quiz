@@ -1,1 +1,13 @@
-<router-outlet></router-outlet>
+<div class="d-flex" id="wrapper" [class.collapsed]="isSidebarCollapsed">
+  <app-sidebar></app-sidebar>
+
+  <div id="page-content-wrapper">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+      <h4 class="ms-3 mb-0">University Quiz Application</h4>
+    </nav>
+
+    <div class="container-fluid py-4">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

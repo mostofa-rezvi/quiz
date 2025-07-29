@@ -1,0 +1,69 @@
+<div class="container my-4">
+  <div *ngIf="isLoading" class="text-center py-5">
+    <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+    <p class="mt-2">Loading Quiz...</p>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger text-center">
+    {{ error }}
+  </div>
+
+  <div *ngIf="quiz && !isLoading && !error">
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">{{ quiz.title }}</h3>
+        <h4 class="mb-0">
+          <i class="fa fa-clock-o me-2"></i> Time Left: {{ formatTime(timeLeft) }}
+        </h4>
+      </div>
+      <div class="card-body">
+        <p class="lead mb-4">Answer the questions below:</p>
+
+        <form (ngSubmit)="submitQuiz()">
+          <div *ngFor="let question of quiz.questions; let i = index" class="card mb-3 bg-light border">
+            <div class="card-body">
+              <h5 class="card-title">Q{{ i + 1 }}. {{ question.text }}</h5>
+
+              <!-- MCQ Options -->
+              <div *ngIf="question.type === QuestionType.MCQ" class="mt-3">
+                <div *ngFor="let option of question.options" class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    [name]="'question_' + question.id"
+                    [id]="'option_' + option.id"
+                    [value]="option.text"
+                    (change)="onOptionChange(question.id!, option.text)"
+                    [checked]="userAnswers[question.id!] === option.text"
+                    [disabled]="isQuizSubmitted"
+                  >
+                  <label class="form-check-label" [for]="'option_' + option.id">
+                    {{ option.text }}
+                  </label>
+                </div>
+              </div>
+
+              <!-- Short Answer Input -->
+              <div *ngIf="question.type === QuestionType.SHORT_ANSWER" class="mt-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  [placeholder]="'Your answer for Q' + (i+1)"
+                  [value]="userAnswers[question.id!] || ''"
+                  (input)="onShortAnswerChange(question.id!, $event)"
+                  [disabled]="isQuizSubmitted"
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success btn-lg" [disabled]="isQuizSubmitted">
+              <i class="fa fa-check-circle me-2"></i>Submit Quiz
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

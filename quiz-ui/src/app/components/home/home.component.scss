@@ -1,0 +1,36 @@
+.home-hero {
+  background: linear-gradient(120deg, #4e54c8 0%, #8f94fb 100%);
+  position: relative;
+  min-height: 420px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+  overflow: hidden;
+}
+
+.decorative-bg {
+  position: absolute;
+  top: -60px;
+  right: -80px;
+  width: 400px;
+  height: 700px;
+  background: radial-gradient(circle at 60% 40%, #fff 0%, #8f94fb 60%, transparent 100%);
+  opacity: 0.18;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, #ffb347 0%, #ffcc33 40%, #fff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.floating-img {
+  animation: float 3.5s ease-in-out infinite;
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.12));
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px);}
+  50% { transform: translateY(-18px);}
+}

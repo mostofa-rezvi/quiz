@@ -7,12 +7,20 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule, provideHttpClient, withFetch} from '@angular/common/http';
 import {QuizListComponent} from './components/quiz-list/quiz-list.component';
 import {QuizCreateComponent} from './components/quiz-create/quiz-create.component';
+import {QuizAttemptComponent} from './components/quiz-attempt/quiz-attempt.component';
+import {QuizResultComponent} from './components/quiz-result/quiz-result.component';
+import {HomeComponent} from './components/home/home.component';
+import {SidebarComponent} from './components/shared/sidebar/sidebar.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     QuizListComponent,
     QuizCreateComponent,
+    QuizAttemptComponent,
+    QuizResultComponent,
+    HomeComponent,
+    SidebarComponent
   ],
   imports: [
     BrowserModule,

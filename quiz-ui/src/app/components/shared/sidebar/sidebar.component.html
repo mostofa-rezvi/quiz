@@ -1,0 +1,24 @@
+<div class="sidebar-container" [class.collapsed]="isCollapsed">
+  <div class="bg-dark border-end sidebar" id="sidebar-wrapper">
+    <div class="sidebar-heading text-white p-3 d-flex align-items-center justify-content-between">
+      <span class="fw-bold"><i class="fa fa-graduation-cap me-2"></i>Quiz App</span>
+      <button class="btn btn-sm btn-toggle text-white ms-2" (click)="toggleSidebar()" aria-label="Toggle sidebar">
+        <i class="fa" [ngClass]="isCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'"></i>
+      </button>
+    </div>
+    <div class="list-group list-group-flush">
+      <a routerLink="/" class="list-group-item list-group-item-action bg-dark text-white">
+        <i class="fa fa-home me-2"></i> <span *ngIf="!isCollapsed">Home</span>
+      </a>
+      <a routerLink="/quizzes" class="list-group-item list-group-item-action bg-dark text-white">
+        <i class="fa fa-list me-2"></i> <span *ngIf="!isCollapsed">Quiz List</span>
+      </a>
+      <a routerLink="/quizzes/create" class="list-group-item list-group-item-action bg-dark text-white">
+        <i class="fa fa-plus-square me-2"></i> <span *ngIf="!isCollapsed">Create Quiz</span>
+      </a>
+      <a routerLink="/results" class="list-group-item list-group-item-action bg-dark text-white">
+        <i class="fa fa-history me-2"></i> <span *ngIf="!isCollapsed">Quiz Results</span>
+      </a>
+    </div>
+  </div>
+</div>

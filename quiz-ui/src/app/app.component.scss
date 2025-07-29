@@ -1,0 +1,96 @@
+/* Layout container */
+#wrapper {
+  display: flex;
+  min-height: 100vh;
+  transition: all 0.3s cubic-bezier(.4,0,.2,1);
+  background: #f8f9fa;
+}
+
+/* Sidebar styles */
+#sidebar-wrapper {
+  width: 240px;
+  min-width: 240px;
+  max-width: 240px;
+  background: linear-gradient(135deg, #232526 0%, #414345 100%);
+  color: #fff;
+  min-height: 100vh;
+  transition: margin-left 0.3s cubic-bezier(.4,0,.2,1);
+  z-index: 1000;
+  box-shadow: 2px 0 16px rgba(0,0,0,0.08);
+}
+
+/* Collapsed sidebar */
+#wrapper.collapsed #sidebar-wrapper {
+  margin-left: -240px;
+}
+
+/* Page content */
+#page-content-wrapper {
+  flex: 1 1 auto;
+  transition: margin-left 0.3s cubic-bezier(.4,0,.2,1);
+  min-width: 0;
+  background: #f8f9fa;
+}
+
+/* When sidebar is expanded, push content */
+#wrapper:not(.collapsed) #page-content-wrapper {
+  margin-left: 0;
+}
+
+/* When sidebar is collapsed, content fills full width */
+#wrapper.collapsed #page-content-wrapper {
+  margin-left: 0;
+}
+
+/* Navbar styles */
+.navbar {
+  box-shadow: 0 2px 4px rgba(0,0,0,.05);
+  background: #fff;
+}
+
+/* Responsive: On small screens, sidebar overlays content */
+@media (max-width: 991.98px) {
+  #sidebar-wrapper {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    margin-left: -240px;
+    z-index: 1050;
+  }
+  #wrapper.collapsed #sidebar-wrapper {
+    margin-left: -240px;
+  }
+  #wrapper:not(.collapsed) #sidebar-wrapper {
+    margin-left: 0;
+    box-shadow: 2px 0 16px rgba(0,0,0,0.18);
+  }
+  #page-content-wrapper {
+    margin-left: 0 !important;
+  }
+  /* Optional: dark overlay when sidebar is open */
+  #wrapper:not(.collapsed)::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.2);
+    z-index: 1040;
+    pointer-events: none;
+  }
+}
+
+/* Button styles */
+.btn-primary {
+  background-color: #4e54c8;
+  border-color: #4e54c8;
+}
+.btn-primary:hover {
+  background-color: #232526;
+  border-color: #232526;
+}
+
+/* General app styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+}
