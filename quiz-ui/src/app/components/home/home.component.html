@@ -4,18 +4,29 @@
     <div class="row align-items-center">
       <div class="col-md-7 text-white">
         <h1 class="display-3 fw-bold mb-3">
-          <span class="gradient-text">Welcome to the University Quiz App!</span>
+          <span class="gradient-text"> Welcome to ENCAPSULEARN </span>
         </h1>
-        <p class="lead fs-4 mb-4">Prepare for your exams with our interactive quizzes.</p>
+        <p class="lead fs-4 mb-4">An Online Platform To Grow Your Capability</p>
         <hr class="border-light opacity-50 my-4 w-50">
         <p class="mb-5 fs-5">Use the navigation on the left to create new quizzes, attempt existing ones, or view your
           past results.</p>
-        <div>
-          <a class="btn btn-success btn-lg me-2" routerLink="/quizzes" role="button">
+        <div *ngIf="isLoggedIn">
+          <a class="btn btn-success btn-lg me-2" routerLink="/quizzes" role="button" *ngIf="!isAdmin">
             <i class="fa fa-play-circle me-2"></i>Start a Quiz
           </a>
-          <a class="btn btn-dark btn-lg" routerLink="/quizzes/create" role="button">
+          <a class="btn btn-success btn-lg me-2" routerLink="/quizzes" role="button" *ngIf="isAdmin">
+            <i class="fa fa-play-circle me-2"></i>Quiz List
+          </a>
+          <a class="btn btn-dark btn-lg" routerLink="/quizzes/create" role="button" *ngIf="isAdmin">
             <i class="fa fa-plus-circle me-2"></i>Create New Quiz
+          </a>
+        </div>
+        <div *ngIf="!isLoggedIn">
+          <a class="btn btn-success btn-lg me-2" routerLink="/login" role="button">
+            <i class="fa fa-sign-in me-2"></i>Login to Start
+          </a>
+          <a class="btn btn-dark btn-lg" routerLink="/register" role="button">
+            <i class="fa fa-user-plus me-2"></i>Register
           </a>
         </div>
       </div>

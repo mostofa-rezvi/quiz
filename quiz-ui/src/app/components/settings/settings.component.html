@@ -1,0 +1,76 @@
+<div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-7">
+          <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white text-center">
+              <h3 class="mb-0"><i class="fa fa-cogs me-2"></i>User Settings</h3>
+            </div>
+            <div class="card-body p-4">
+
+              <!-- Username Update Form -->
+              <h5 class="card-title mb-3">Change Username</h5>
+              <form [formGroup]="usernameForm" (ngSubmit)="onUpdateUsername()">
+                <div class="mb-3">
+                  <label for="newUsername" class="form-label">New Username</label>
+                  <input type="text" id="newUsername" formControlName="newUsername" class="form-control"
+                         [class.is-invalid]="usernameForm.get('newUsername')?.invalid && (usernameForm.get('newUsername')?.dirty || usernameForm.get('newUsername')?.touched)">
+                  <div *ngIf="usernameForm.get('newUsername')?.invalid && (usernameForm.get('newUsername')?.dirty || usernameForm.get('newUsername')?.touched)" class="invalid-feedback">
+                    Username is required and must be at least 3 characters.
+                  </div>
+                </div>
+                <div *ngIf="usernameMessage" [class.alert]="true" [class.alert-success]="usernameSuccess" [class.alert-danger]="!usernameSuccess" class="mb-3">
+                  {{ usernameMessage }}
+                </div>
+                <div class="d-grid mb-4">
+                  <button type="submit" class="btn btn-info" [disabled]="usernameForm.invalid || usernameLoading">
+                    <span *ngIf="usernameLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Update Username
+                  </button>
+                </div>
+              </form>
+
+              <hr class="my-4">
+
+              <!-- Password Change Form -->
+              <h5 class="card-title mb-3">Change Password</h5>
+              <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()">
+                <div class="mb-3">
+                  <label for="oldPassword" class="form-label">Old Password</label>
+                  <input type="password" id="oldPassword" formControlName="oldPassword" class="form-control"
+                         [class.is-invalid]="passwordForm.get('oldPassword')?.invalid && (passwordForm.get('oldPassword')?.dirty || passwordForm.get('oldPassword')?.touched)">
+                  <div *ngIf="passwordForm.get('oldPassword')?.invalid && (passwordForm.get('oldPassword')?.dirty || passwordForm.get('oldPassword')?.touched)" class="invalid-feedback">
+                    Old password is required.
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="newPassword" class="form-label">New Password</label>
+                  <input type="password" id="newPassword" formControlName="newPassword" class="form-control"
+                         [class.is-invalid]="passwordForm.get('newPassword')?.invalid && (passwordForm.get('newPassword')?.dirty || passwordForm.get('newPassword')?.touched)">
+                  <div *ngIf="passwordForm.get('newPassword')?.invalid && (passwordForm.get('newPassword')?.dirty || passwordForm.get('newPassword')?.touched)" class="invalid-feedback">
+                    New password is required and must be at least 6 characters.
+                  </div>
+                </div>
+                <div class="mb-4">
+                  <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
+                  <input type="password" id="confirmNewPassword" formControlName="confirmNewPassword" class="form-control"
+                         [class.is-invalid]="passwordForm.get('confirmNewPassword')?.invalid && (passwordForm.get('confirmNewPassword')?.dirty || passwordForm.get('confirmNewPassword')?.touched)">
+                  <div *ngIf="passwordForm.get('confirmNewPassword')?.invalid && (passwordForm.get('confirmNewPassword')?.dirty || passwordForm.get('confirmNewPassword')?.touched)" class="invalid-feedback">
+                    <span *ngIf="passwordForm.get('confirmNewPassword')?.errors?.['required']">Confirm new password is required.</span>
+                    <span *ngIf="passwordForm.get('confirmNewPassword')?.errors?.['passwordsMismatch']">Passwords do not match.</span>
+                  </div>
+                </div>
+                <div *ngIf="passwordMessage" [class.alert]="true" [class.alert-success]="passwordSuccess" [class.alert-danger]="!passwordSuccess" class="mb-3">
+                  {{ passwordMessage }}
+                </div>
+                <div class="d-grid">
+                  <button type="submit" class="btn btn-warning" [disabled]="passwordForm.invalid || passwordLoading">
+                    <span *ngIf="passwordLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Change Password
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

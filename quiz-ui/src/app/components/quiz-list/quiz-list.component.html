@@ -2,7 +2,7 @@
   <div class="card shadow-sm">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
       <h3 class="mb-0">Available Quizzes</h3>
-      <button class="btn btn-light" routerLink="/quizzes/create">
+      <button class="btn btn-light" routerLink="/quizzes/create" *ngIf="isAdmin">
         <i class="fa fa-plus-circle me-2"></i>Create New Quiz
       </button>
     </div>
@@ -14,7 +14,7 @@
       </div>
 
       <div *ngIf="!isLoading && quizzes.length === 0" class="alert alert-info text-center">
-        No quizzes found. <a routerLink="/quizzes/create">Create one now!</a>
+        No quizzes found. <a routerLink="/quizzes/create" *ngIf="isAdmin">Create one now!</a>
       </div>
 
       <div *ngIf="!isLoading && quizzes.length > 0" class="table-responsive">
@@ -37,15 +37,18 @@
             <td>{{ quiz.durationMinutes }} mins</td>
             <td>{{ quiz.numberOfQuestions }}</td>
             <td>
-              <button class="btn btn-success btn-sm me-2" (click)="startQuiz(quiz.id)">
+              <button *ngIf="!isAdmin" class="btn btn-success btn-sm me-2" (click)="startQuiz(quiz.id)">
                 <i class="fa fa-play"></i> Attempt Quiz
               </button>
-              <button class="btn btn-info btn-sm me-2" (click)="editQuiz(quiz.id)">
-                <i class="fa fa-pencil"></i> Update
-              </button>
-              <button class="btn btn-danger btn-sm" (click)="deleteQuiz(quiz.id)">
-                <i class="fa fa-trash"></i> Delete
-              </button>
+
+              <ng-container *ngIf="isAdmin">
+                <button class="btn btn-info btn-sm me-2" (click)="editQuiz(quiz.id)">
+                  <i class="fa fa-pencil"></i> Update
+                </button>
+                <button class="btn btn-danger btn-sm" (click)="deleteQuiz(quiz.id)">
+                  <i class="fa fa-trash"></i> Delete
+                </button>
+              </ng-container>
             </td>
           </tr>
           </tbody>
@@ -61,7 +64,8 @@
     <div class="modal-content">
       <div class="modal-header bg-success text-white">
         <h5 class="modal-title" id="marksModalLabel">Quiz Result for {{ quizSubmittedTitle }}</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" (click)="closeMarksPopup()"></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"
+                (click)="closeMarksPopup()"></button>
       </div>
       <div class="modal-body text-center">
         <i class="fa fa-trophy fa-4x text-warning mb-3"></i>
@@ -70,8 +74,12 @@
         <p class="lead">Congratulations on completing the quiz!</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="closeMarksPopup()">Close</button>
-        <button type="button" class="btn btn-primary" routerLink="/results" data-bs-dismiss="modal" (click)="closeMarksPopup()">View All Results</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                (click)="closeMarksPopup()">Close
+        </button>
+        <button type="button" class="btn btn-primary" routerLink="/results" data-bs-dismiss="modal"
+                (click)="closeMarksPopup()">View All Results
+        </button>
       </div>
     </div>
   </div>

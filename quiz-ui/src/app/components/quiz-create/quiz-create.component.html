@@ -22,7 +22,7 @@
       </ul>
 
       <div class="tab-content" id="myTabContent">
-        
+
         <!-- Manual Entry Tab -->
         <div class="tab-pane fade show active" id="manual" role="tabpanel" aria-labelledby="manual-tab">
           <form [formGroup]="quizForm" (ngSubmit)="onSubmitManual()">
@@ -128,7 +128,7 @@
                     </div>
                   </div>
                   <div
-                      *ngIf="getOptions(question).invalid && (getOptions(question).dirty || getOptions(question).touched || false)"
+                    *ngIf="getOptions(question).invalid && (getOptions(question).dirty || getOptions(question).touched || false)"
                     class="alert alert-danger mt-2">
                     <div *ngIf="getOptions(question).errors?.['noOptions']">At least two options are required for MCQ
                       questions.

@@ -1,0 +1,57 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-sm">
+        <div class="card-header bg-success text-white text-center">
+          <h3 class="mb-0"><i class="fa fa-user-plus me-2"></i>User Registration</h3>
+        </div>
+        <div class="card-body p-4">
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label for="regUsername" class="form-label">Username</label>
+              <input type="text" id="regUsername" formControlName="username" class="form-control"
+                     [class.is-invalid]="registerForm.get('username')?.invalid && (registerForm.get('username')?.dirty || registerForm.get('username')?.touched)">
+              <div
+                *ngIf="registerForm.get('username')?.invalid && (registerForm.get('username')?.dirty || registerForm.get('username')?.touched)"
+                class="invalid-feedback">
+                Username is required and must be at least 3 characters.
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="regPassword" class="form-label">Password</label>
+              <input type="password" id="regPassword" formControlName="password" class="form-control"
+                     [class.is-invalid]="registerForm.get('password')?.invalid && (registerForm.get('password')?.dirty || registerForm.get('password')?.touched)">
+              <div
+                *ngIf="registerForm.get('password')?.invalid && (registerForm.get('password')?.dirty || registerForm.get('password')?.touched)"
+                class="invalid-feedback">
+                Password is required and must be at least 6 characters.
+              </div>
+            </div>
+            <div class="mb-4">
+              <label for="confirmPassword" class="form-label">Confirm Password</label>
+              <input type="password" id="confirmPassword" formControlName="confirmPassword" class="form-control"
+                     [class.is-invalid]="registerForm.get('confirmPassword')?.invalid && (registerForm.get('confirmPassword')?.dirty || registerForm.get('confirmPassword')?.touched)">
+              <div
+                *ngIf="registerForm.get('confirmPassword')?.invalid && (registerForm.get('confirmPassword')?.dirty || registerForm.get('confirmPassword')?.touched)"
+                class="invalid-feedback">
+                <span
+                  *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">Confirm Password is required.</span>
+                <span
+                  *ngIf="registerForm.get('confirmPassword')?.errors?.['passwordsMismatch']">Passwords do not match.</span>
+              </div>
+            </div>
+            <div *ngIf="errorMessage" class="alert alert-danger mb-3">{{ errorMessage }}</div>
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-success btn-lg" [disabled]="registerForm.invalid || isLoading">
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status"
+                      aria-hidden="true"></span>
+                Register
+              </button>
+              <p class="text-center mt-3 mb-0">Already have an account? <a routerLink="/login">Login here</a></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

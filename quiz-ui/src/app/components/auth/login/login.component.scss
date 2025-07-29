@@ -1,0 +1,116 @@
+body {
+  background: linear-gradient(135deg, #4f8cff 0%, #a6bfff 100%);
+  min-height: 100vh;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: none;
+  border-radius: 1.5rem;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+  transition: box-shadow 0.3s;
+}
+
+.card:hover {
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.25);
+}
+
+.card-header {
+  background: linear-gradient(90deg, #4f8cff 60%, #6a82fb 100%) !important;
+  border-top-left-radius: 1.5rem !important;
+  border-top-right-radius: 1.5rem !important;
+  box-shadow: 0 2px 8px 0 rgba(79, 140, 255, 0.15);
+}
+
+.card-header h3 {
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #2d3a4a;
+  letter-spacing: 0.5px;
+}
+
+.form-control {
+  background: rgba(255,255,255,0.7);
+  border: 1.5px solid #e3e8f0;
+  border-radius: 0.75rem;
+  font-size: 1.1rem;
+  padding: 0.75rem 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: none;
+}
+
+.form-control:focus {
+  border-color: #4f8cff;
+  box-shadow: 0 0 0 2px rgba(79, 140, 255, 0.15);
+  background: rgba(255,255,255,0.95);
+}
+
+.is-invalid {
+  border-color: #ff4f4f !important;
+  background: rgba(255, 79, 79, 0.07) !important;
+}
+
+.invalid-feedback {
+  font-size: 0.97rem;
+  color: #ff4f4f;
+  margin-top: 0.25rem;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, #4f8cff 60%, #6a82fb 100%);
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px 0 rgba(79, 140, 255, 0.10);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:disabled,
+.btn-primary[disabled] {
+  background: #b3c6ff !important;
+  color: #fff !important;
+  opacity: 0.7;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background: linear-gradient(90deg, #3a6eea 60%, #4f8cff 100%);
+  box-shadow: 0 4px 16px 0 rgba(79, 140, 255, 0.18);
+}
+
+.alert-danger {
+  border-radius: 0.75rem;
+  background: rgba(255, 79, 79, 0.12);
+  color: #b71c1c;
+  border: none;
+  font-weight: 500;
+}
+
+a[routerLink] {
+  color: #4f8cff;
+  text-decoration: underline;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+a[routerLink]:hover {
+  color: #2d3a4a;
+  text-decoration: none;
+}
+
+@media (max-width: 576px) {
+  .card {
+    border-radius: 1rem;
+  }
+  .card-header {
+    border-top-left-radius: 1rem !important;
+    border-top-right-radius: 1rem !important;
+  }
+}

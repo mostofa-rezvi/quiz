@@ -1,54 +1,132 @@
-/* Layout container */
-#wrapper {
-  display: flex;
+body {
+  background: linear-gradient(120deg, #e0e7ff 0%, #f8fafc 100%);
   min-height: 100vh;
-  transition: all 0.3s cubic-bezier(.4,0,.2,1);
-  background: #f8f9fa;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
 }
 
-/* Sidebar styles */
+/* Wrapper and Sidebar */
+#wrapper {
+  min-height: 100vh;
+  display: flex;
+  background: transparent;
+  transition: background 0.3s;
+}
+
 #sidebar-wrapper {
-  width: 240px;
-  min-width: 240px;
-  max-width: 240px;
   background: linear-gradient(135deg, #232526 0%, #414345 100%);
   color: #fff;
   min-height: 100vh;
-  transition: margin-left 0.3s cubic-bezier(.4,0,.2,1);
-  z-index: 1000;
   box-shadow: 2px 0 16px rgba(0,0,0,0.08);
+  transition: margin-left 0.3s cubic-bezier(.4,0,.2,1);
 }
 
-/* Collapsed sidebar */
 #wrapper.collapsed #sidebar-wrapper {
   margin-left: -240px;
 }
 
-/* Page content */
+/* Page Content */
 #page-content-wrapper {
   flex: 1 1 auto;
-  transition: margin-left 0.3s cubic-bezier(.4,0,.2,1);
   min-width: 0;
-  background: #f8f9fa;
+  background: transparent;
+  transition: margin-left 0.3s cubic-bezier(.4,0,.2,1);
 }
 
-/* When sidebar is expanded, push content */
-#wrapper:not(.collapsed) #page-content-wrapper {
-  margin-left: 0;
-}
-
-/* When sidebar is collapsed, content fills full width */
-#wrapper.collapsed #page-content-wrapper {
-  margin-left: 0;
-}
-
-/* Navbar styles */
+/* Navbar */
 .navbar {
-  box-shadow: 0 2px 4px rgba(0,0,0,.05);
+  background: rgba(255,255,255,0.95) !important;
+  box-shadow: 0 2px 12px 0 rgba(79, 140, 255, 0.07);
+  border-radius: 0 0 1.2rem 1.2rem;
+  padding: 1rem 2rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  min-height: 70px;
+}
+
+.navbar h4 {
+  font-weight: 700;
+  color: #4e54c8;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 8px rgba(79, 140, 255, 0.08);
+}
+
+.navbar-text {
+  font-size: 1.08rem;
+  color: #232526;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  background: rgba(79, 140, 255, 0.07);
+  padding: 0.4rem 1rem;
+  border-radius: 1.2rem;
+  box-shadow: 0 1px 4px 0 rgba(79, 140, 255, 0.05);
+  display: inline-flex;
+  align-items: center;
+}
+
+.navbar-text strong {
+  color: #4e54c8;
+  font-weight: 700;
+}
+
+.btn {
+  border-radius: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  transition: box-shadow 0.2s, background 0.2s, color 0.2s;
+  box-shadow: 0 2px 8px 0 rgba(79, 140, 255, 0.07);
+}
+
+.btn-primary, .btn-outline-primary {
+  background: linear-gradient(90deg, #4e54c8 60%, #8f94fb 100%);
+  border: none;
+  color: #fff;
+}
+
+.btn-primary:hover, .btn-outline-primary:hover {
+  background: linear-gradient(90deg, #232526 60%, #4e54c8 100%);
+  color: #fff;
+}
+
+.btn-outline-secondary {
+  border: 1.5px solid #bfc9d9;
+  color: #4e54c8;
+  background: #f8fafc;
+}
+
+.btn-outline-secondary:hover {
+  background: #e0e7ff;
+  color: #232526;
+  border-color: #4e54c8;
+}
+
+.btn-outline-danger {
+  border: 1.5px solid #ff4f4f;
+  color: #ff4f4f;
   background: #fff;
 }
 
-/* Responsive: On small screens, sidebar overlays content */
+.btn-outline-danger:hover {
+  background: #ff4f4f;
+  color: #fff;
+}
+
+.fa-user-circle, .fa-cog, .fa-sign-out {
+  color: #4e54c8;
+  font-size: 1.2em;
+  vertical-align: middle;
+}
+
+.container-fluid {
+  background: rgba(255,255,255,0.85);
+  border-radius: 1.2rem;
+  box-shadow: 0 4px 24px 0 rgba(79, 140, 255, 0.07);
+  padding: 2rem 2.5rem;
+  margin-top: 1.5rem;
+  min-height: 70vh;
+}
+
+/* Responsive adjustments */
 @media (max-width: 991.98px) {
   #sidebar-wrapper {
     position: fixed;
@@ -68,29 +146,27 @@
   #page-content-wrapper {
     margin-left: 0 !important;
   }
-  /* Optional: dark overlay when sidebar is open */
-  #wrapper:not(.collapsed)::after {
-    content: '';
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.2);
-    z-index: 1040;
-    pointer-events: none;
+  .container-fluid {
+    padding: 1rem 0.5rem;
+    border-radius: 0.7rem;
+  }
+  .navbar {
+    padding: 0.7rem 1rem;
+    border-radius: 0 0 0.7rem 0.7rem;
   }
 }
 
-/* Button styles */
-.btn-primary {
-  background-color: #4e54c8;
-  border-color: #4e54c8;
-}
-.btn-primary:hover {
-  background-color: #232526;
-  border-color: #232526;
-}
-
-/* General app styles */
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f8f9fa;
+@media (max-width: 576px) {
+  .container-fluid {
+    padding: 0.5rem 0.2rem;
+    border-radius: 0.5rem;
+  }
+  .navbar {
+    padding: 0.5rem 0.5rem;
+    border-radius: 0 0 0.5rem 0.5rem;
+  }
+  .navbar-text {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.98rem;
+  }
 }

@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { QuizResponse } from '../models/quizResponse.model';
-import { Quiz } from '../models/quiz.model';
+import {QuizResponse} from '../models/quizResponse.model';
+import {Quiz} from '../models/quiz.model';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class QuizService {
+
   private apiUrl = 'http://localhost:8080/api/quizzes';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAllQuizzes(): Observable<QuizResponse[]> {
     return this.http.get<QuizResponse[]>(this.apiUrl);

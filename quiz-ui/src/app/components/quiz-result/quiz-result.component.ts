@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { AttemptResult } from '../../models/attemptResult.model';
-import { AttemptService } from '../../services/attempt.service';
-import { QuestionType } from '../../models/questionType.model';
+import {Component, OnInit} from '@angular/core';
+import {AttemptResult} from '../../models/attemptResult.model';
+import {AttemptService} from '../../services/attempt.service';
+import {QuestionType} from '../../models/questionType.model';
 
 @Component({
   selector: 'app-quiz-result',
   templateUrl: './quiz-result.component.html',
-  styleUrls: ['./quiz-result.component.scss'],
+  styleUrls: ['./quiz-result.component.scss']
 })
 export class QuizResultComponent implements OnInit {
   attemptHistory: AttemptResult[] = [];
@@ -20,7 +20,8 @@ export class QuizResultComponent implements OnInit {
   totalPages: number = 0;
   paginatedAttempts: AttemptResult[] = [];
 
-  constructor(private attemptService: AttemptService) {}
+  constructor(private attemptService: AttemptService) {
+  }
 
   ngOnInit(): void {
     this.loadAttemptHistory();
@@ -29,15 +30,12 @@ export class QuizResultComponent implements OnInit {
   loadAttemptHistory(): void {
     this.isLoading = true;
     this.attemptService.getAttemptHistory().subscribe(
-      (data) => {
-        this.attemptHistory = data.sort(
-          (a, b) =>
-            new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
-        );
+      data => {
+        this.attemptHistory = data.sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
         this.isLoading = false;
         this.calculatePagination();
       },
-      (err) => {
+      err => {
         console.error('Error loading attempt history:', err);
         this.error = 'Failed to load quiz attempt history.';
         this.isLoading = false;
@@ -49,11 +47,11 @@ export class QuizResultComponent implements OnInit {
     this.isLoadingDetails = true;
     this.selectedAttemptDetails = null;
     this.attemptService.getAttemptDetails(attemptId).subscribe(
-      (data) => {
+      data => {
         this.selectedAttemptDetails = data;
         this.isLoadingDetails = false;
       },
-      (err) => {
+      err => {
         console.error('Error loading attempt details:', err);
         this.error = 'Failed to load attempt details.';
         this.isLoadingDetails = false;
@@ -107,8 +105,6 @@ export class QuizResultComponent implements OnInit {
   }
 
   get pages(): number[] {
-    return Array(this.totalPages)
-      .fill(0)
-      .map((x, i) => i + 1);
+    return Array(this.totalPages).fill(0).map((x, i) => i + 1);
   }
 }

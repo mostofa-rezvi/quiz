@@ -1,22 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  FormArray,
-  Validators,
-  AbstractControl,
-} from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { QuizService } from '../../services/quiz.service';
-import { HttpErrorResponse } from '@angular/common/http';
-import { QuizType } from '../../models/quizType.model';
-import { QuestionType } from '../../models/questionType.model';
-import { Quiz } from '../../models/quiz.model';
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, FormArray, Validators, AbstractControl} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
+import {QuizService} from '../../services/quiz.service';
+import {HttpErrorResponse} from '@angular/common/http';
+import {QuizType} from '../../models/quizType.model';
+import {QuestionType} from '../../models/questionType.model';
+import {Quiz} from '../../models/quiz.model';
 
 @Component({
   selector: 'app-quiz-create',
   templateUrl: './quiz-create.component.html',
-  styleUrl: './quiz-create.component.scss',
+  styleUrl: './quiz-create.component.scss'
 })
 export class QuizCreateComponent implements OnInit {
   quizForm: FormGroup;
@@ -37,7 +31,7 @@ export class QuizCreateComponent implements OnInit {
       title: ['', Validators.required],
       durationMinutes: ['', [Validators.required, Validators.min(1)]],
       type: [QuizType.MCQ, Validators.required],
-      questions: this.fb.array([], Validators.required),
+      questions: this.fb.array([], Validators.required)
     });
   }
 
@@ -55,34 +49,32 @@ export class QuizCreateComponent implements OnInit {
         this.quizForm.patchValue({
           title: quiz.title,
           durationMinutes: quiz.durationMinutes,
-          type: quiz.type,
+          type: quiz.type
         });
 
         this.questions.clear();
 
-        quiz.questions?.forEach((q) => {
+        quiz.questions?.forEach(q => {
           const questionGroup = this.fb.group({
             text: [q.text, Validators.required],
             type: [q.type, Validators.required],
             options: this.fb.array([]),
-            correctAnswer: [q.correctAnswer || ''],
+            correctAnswer: [q.correctAnswer || '']
           });
 
           if (q.type === QuestionType.MCQ && q.options) {
             const optionsArray = questionGroup.get('options') as FormArray;
-            q.options.forEach((opt) => {
-              optionsArray.push(
-                this.fb.group({
-                  text: [opt.text, Validators.required],
-                  correct: [opt.correct],
-                })
-              );
+            q.options.forEach(opt => {
+              optionsArray.push(this.fb.group({
+                text: [opt.text, Validators.required],
+                correct: [opt.correct]
+              }));
             });
           }
           this.questions.push(questionGroup);
         });
       },
-      (error) => {
+      error => {
         console.error('Error loading quiz for edit', error);
         alert('Could not load quiz for editing.');
       }
@@ -99,7 +91,7 @@ export class QuizCreateComponent implements OnInit {
       text: ['', Validators.required],
       type: [questionType, Validators.required],
       options: this.fb.array([], this.optionsValidator),
-      correctAnswer: [''],
+      correctAnswer: ['']
     });
     this.questions.push(questionGroup);
     this.updateQuestionValidators(questionGroup);
@@ -115,12 +107,10 @@ export class QuizCreateComponent implements OnInit {
 
   addOption(questionIndex: number): void {
     const options = this.getOptions(this.questions.at(questionIndex));
-    options.push(
-      this.fb.group({
-        text: ['', Validators.required],
-        correct: [false],
-      })
-    );
+    options.push(this.fb.group({
+      text: ['', Validators.required],
+      correct: [false]
+    }));
   }
 
   removeOption(questionIndex: number, optionIndex: number): void {
@@ -131,16 +121,14 @@ export class QuizCreateComponent implements OnInit {
   optionsValidator(control: AbstractControl): { [key: string]: any } | null {
     const optionsArray = control as FormArray;
     if (!optionsArray || optionsArray.length === 0) {
-      return { noOptions: true };
+      return {'noOptions': true};
     }
     if (optionsArray.length < 2) {
-      return { minTwoOptions: true };
+      return {'minTwoOptions': true};
     }
-    const correctOptions = optionsArray.controls.filter(
-      (opt) => opt.get('correct')?.value === true
-    );
+    const correctOptions = optionsArray.controls.filter(opt => opt.get('correct')?.value === true);
     if (correctOptions.length !== 1) {
-      return { oneCorrectOption: true };
+      return {'oneCorrectOption': true};
     }
     return null;
   }
@@ -155,10 +143,7 @@ export class QuizCreateComponent implements OnInit {
     const correctAnswerControl = questionGroup.get('correctAnswer');
 
     if (typeControl?.value === QuestionType.MCQ) {
-      optionsControl?.setValidators([
-        Validators.required,
-        this.optionsValidator,
-      ]);
+      optionsControl?.setValidators([Validators.required, this.optionsValidator]);
       correctAnswerControl?.clearValidators();
       correctAnswerControl?.setValue('');
     } else if (typeControl?.value === QuestionType.SHORT_ANSWER) {
@@ -172,6 +157,7 @@ export class QuizCreateComponent implements OnInit {
     correctAnswerControl?.updateValueAndValidity();
     questionGroup.updateValueAndValidity();
   }
+
 
   onSubmitManual(): void {
     if (this.quizForm.invalid) {
@@ -189,7 +175,7 @@ export class QuizCreateComponent implements OnInit {
           alert('Quiz updated successfully!');
           this.router.navigate(['/quizzes']);
         },
-        (error) => {
+        error => {
           console.error('Error updating quiz:', error);
           alert('Failed to update quiz. Please try again.');
         }
@@ -200,7 +186,7 @@ export class QuizCreateComponent implements OnInit {
           alert('Quiz created successfully!');
           this.router.navigate(['/quizzes']);
         },
-        (error) => {
+        error => {
           console.error('Error creating quiz:', error);
           alert('Failed to create quiz. Please try again.');
         }
@@ -222,7 +208,7 @@ export class QuizCreateComponent implements OnInit {
   onUploadExcel(): void {
     if (this.selectedFile) {
       this.quizService.uploadQuizExcel(this.selectedFile).subscribe(
-        (response) => {
+        response => {
           this.fileUploadMessage = `Successfully uploaded ${response.length} quizzes!`;
           alert(this.fileUploadMessage);
           this.router.navigate(['/quizzes']);
@@ -230,13 +216,10 @@ export class QuizCreateComponent implements OnInit {
         (error: HttpErrorResponse) => {
           console.error('File upload error:', error);
           if (error.status === 400 && error.error) {
-            this.fileUploadMessage = `Upload failed: ${
-              error.error.message || 'Invalid Excel format.'
-            }`;
+            this.fileUploadMessage = `Upload failed: ${error.error.message || 'Invalid Excel format.'}`;
             alert(this.fileUploadMessage);
           } else {
-            this.fileUploadMessage =
-              'File upload failed. Please check console for details.';
+            this.fileUploadMessage = 'File upload failed. Please check console for details.';
             alert(this.fileUploadMessage);
           }
         }
@@ -248,7 +231,7 @@ export class QuizCreateComponent implements OnInit {
 
   setCorrectOption(questionIndex: number, optionIndex: number): void {
     const optionsArray = this.getOptions(this.questions.at(questionIndex));
-    optionsArray.controls.forEach((optionGroup) => {
+    optionsArray.controls.forEach(optionGroup => {
       optionGroup.get('correct')?.setValue(false);
     });
     optionsArray.at(optionIndex).get('correct')?.setValue(true);

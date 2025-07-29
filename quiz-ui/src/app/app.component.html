@@ -1,9 +1,24 @@
 <div class="d-flex" id="wrapper" [class.collapsed]="isSidebarCollapsed">
-  <app-sidebar></app-sidebar>
+  <app-sidebar *ngIf="isLoggedIn"></app-sidebar>
 
   <div id="page-content-wrapper">
     <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-      <h4 class="ms-3 mb-0">University Quiz Application</h4>
+      <h4 class="ms-3 mb-0"> ENCAPSULEARN </h4>
+      <div class="ms-auto me-3" *ngIf="isLoggedIn">
+        <span class="navbar-text me-3">
+          <i class="fa fa-user-circle me-1"></i> <strong>{{ username }}</strong>
+        </span>
+        <button class="btn btn-outline-secondary me-2" routerLink="/settings">
+          <i class="fa fa-cog"></i> Settings
+        </button>
+        <button class="btn btn-outline-danger" (click)="logout()">
+          <i class="fa fa-sign-out"></i> Logout
+        </button>
+      </div>
+      <div class="ms-auto me-3" *ngIf="!isLoggedIn">
+        <a class="btn btn-primary me-2" routerLink="/login">Login</a>
+        <a class="btn btn-outline-primary" routerLink="/register">Register</a>
+      </div>
     </nav>
 
     <div class="container-fluid py-4">

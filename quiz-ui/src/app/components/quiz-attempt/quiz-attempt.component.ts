@@ -1,19 +1,19 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { QuizService } from '../../services/quiz.service';
-import { AttemptService } from '../../services/attempt.service';
-import { Subscription, interval } from 'rxjs';
-import { takeWhile } from 'rxjs/operators';
-import { Quiz } from '../../models/quiz.model';
-import { AttemptAnswer } from '../../models/attemptAnswer.model';
-import { AttemptSubmissionRequest } from '../../models/attemptSubmissionRequest.model';
-import { AttemptResult } from '../../models/attemptResult.model';
-import { QuestionType } from '../../models/questionType.model';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {QuizService} from '../../services/quiz.service';
+import {AttemptService} from '../../services/attempt.service';
+import {Subscription, interval} from 'rxjs';
+import {takeWhile} from 'rxjs/operators';
+import {Quiz} from '../../models/quiz.model';
+import {AttemptAnswer} from '../../models/attemptAnswer.model';
+import {AttemptSubmissionRequest} from '../../models/attemptSubmissionRequest.model';
+import {AttemptResult} from '../../models/attemptResult.model';
+import {QuestionType} from '../../models/questionType.model';
 
 @Component({
   selector: 'app-quiz-attempt',
   templateUrl: './quiz-attempt.component.html',
-  styleUrls: ['./quiz-attempt.component.scss'],
+  styleUrls: ['./quiz-attempt.component.scss']
 })
 export class QuizAttemptComponent implements OnInit, OnDestroy {
   quiz: Quiz | null = null;
@@ -31,7 +31,8 @@ export class QuizAttemptComponent implements OnInit, OnDestroy {
     private router: Router,
     private quizService: QuizService,
     private attemptService: AttemptService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     const quizIdParam = this.route.snapshot.paramMap.get('id');
@@ -50,17 +51,17 @@ export class QuizAttemptComponent implements OnInit, OnDestroy {
 
   loadQuiz(quizId: number): void {
     this.quizService.getQuizById(quizId).subscribe(
-      (quiz) => {
+      quiz => {
         this.quiz = quiz;
         this.timeLeft = quiz.durationMinutes * 60;
         this.isLoading = false;
         this.startTimer();
 
-        this.quiz.questions?.forEach((q) => {
+        this.quiz.questions?.forEach(q => {
           this.userAnswers[q.id!] = '';
         });
       },
-      (error) => {
+      error => {
         console.error('Error loading quiz:', error);
         this.error = 'Failed to load quiz details.';
         this.isLoading = false;
@@ -99,13 +100,8 @@ export class QuizAttemptComponent implements OnInit, OnDestroy {
 
   submitQuiz(isTimerExpired: boolean = false): void {
     if (this.isQuizSubmitted) return;
-    if (
-      !confirm(
-        isTimerExpired
-          ? 'Time is up! Your quiz will be submitted automatically.'
-          : 'Are you sure you want to submit the quiz?'
-      )
-    ) {
+
+    if (!confirm(isTimerExpired ? 'Time is up! Your quiz will be submitted automatically.' : 'Are you sure you want to submit the quiz?')) {
       return;
     }
 
@@ -113,39 +109,35 @@ export class QuizAttemptComponent implements OnInit, OnDestroy {
     this.timerSubscription?.unsubscribe();
 
     const submissionAnswers: AttemptAnswer[] = [];
-    this.quiz?.questions?.forEach((q) => {
+    this.quiz?.questions?.forEach(q => {
       submissionAnswers.push({
         questionId: q.id!,
-        userAnswer: this.userAnswers[q.id!] || '',
+        userAnswer: this.userAnswers[q.id!] || ''
       });
     });
 
     const submissionRequest: AttemptSubmissionRequest = {
-      answers: submissionAnswers,
+      answers: submissionAnswers
     };
 
     if (this.attemptId) {
-      this.attemptService
-        .submitAttempt(this.attemptId, submissionRequest)
-        .subscribe(
-          (result: AttemptResult) => {
-            alert(
-              `Quiz submitted! Your score: ${result.score}/${result.totalQuestions}`
-            );
-            this.router.navigate(['/quizzes'], {
-              state: {
-                score: result.score,
-                totalQuestions: result.totalQuestions,
-                quizTitle: result.quizTitle,
-              },
-            });
-          },
-          (submitError) => {
-            console.error('Error submitting quiz:', submitError);
-            alert('Failed to submit quiz. Please try again.');
-            this.isQuizSubmitted = false;
-          }
-        );
+      this.attemptService.submitAttempt(this.attemptId, submissionRequest).subscribe(
+        (result: AttemptResult) => {
+          alert(`Quiz submitted! Your score: ${result.score}/${result.totalQuestions}`);
+          this.router.navigate(['/quizzes'], {
+            state: {
+              score: result.score,
+              totalQuestions: result.totalQuestions,
+              quizTitle: result.quizTitle
+            }
+          });
+        },
+        submitError => {
+          console.error('Error submitting quiz:', submitError);
+          alert('Failed to submit quiz. Please try again.');
+          this.isQuizSubmitted = false;
+        }
+      );
     }
   }
 
